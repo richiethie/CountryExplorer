@@ -6,7 +6,7 @@ interface Props {
 
 export default function CountryCard({ country }: Props) {
   return (
-    <div className="group bg-zinc-100/90 dark:bg-zinc-800/70 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-700/50 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-out">
+    <div className="group cursor-pointer bg-zinc-100/90 dark:bg-zinc-800/70 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-700/50 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-out">
       {/* Flag Image */}
       <div className="p-4 pt-6">
         <div className="relative overflow-hidden">

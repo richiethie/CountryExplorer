@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { fetchCountries } from "./services/countriesApi";
+import { fetchCountries, fetchCountryDetails } from "./services/countriesApi";
 import type { Country } from "./types/Country";
+import type { DetailedCountry } from "./types/DetailedCountry";
 import CountryCard from "./components/CountryCard";
+import CountryModal from "./components/CountryModal";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import StatsBar from "./components/StatsBar";
@@ -19,6 +21,7 @@ function App() {
   const observerRef = useRef<HTMLDivElement | null>(null);
   const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
   const [showToTop, setShowToTop] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<DetailedCountry | null>(null);
 
   useEffect(() => {
     fetchCountries()
@@ -32,9 +35,7 @@ function App() {
 
   const filteredCountries = countries.filter((country) => {
     const matchesSearch =
-      country.name?.common
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
+      country.name?.common?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       country.region?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRegion = region === "All" || country.region === region;
@@ -81,10 +82,18 @@ function App() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const handleCardClick = async (countryName: string) => {
+    try {
+      const detailed = await fetchCountryDetails(countryName);
+      setSelectedCountry(detailed);
+    } catch {
+      alert("Failed to load country details");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100 transition-all duration-500">
-      {/* Animated background elements */}
+      {/* Animated background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/10 dark:bg-blue-500/5 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400/10 dark:bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -93,7 +102,6 @@ function App() {
       <div className="relative z-10">
         <Header />
 
-        {/* Error State */}
         {error && (
           <div className="max-w-7xl mx-auto px-6 py-4">
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-2xl p-6 text-center">
@@ -104,7 +112,6 @@ function App() {
           </div>
         )}
 
-        {/* Search and Filter Controls */}
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="bg-white/50 dark:bg-zinc-800/50 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-700/50 rounded-2xl p-6 shadow-lg">
             <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-6">
@@ -134,27 +141,22 @@ function App() {
         </div>
 
         <main className="max-w-7xl mx-auto px-6 pb-8">
-          {/* Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {filteredCountries.slice(0, visibleCount).map((country, idx) => (
               <div
                 key={country.name?.common || idx}
                 className="group fade-in-up"
+                onClick={() => handleCardClick(country.name.common)}
               >
                 <CountryCard country={country} />
               </div>
             ))}
           </div>
 
-          {/* Empty State */}
           {filteredCountries.length === 0 && countries.length > 0 && (
             <EmptyState />
           )}
-
-          {/* Loading Initial Skeleton */}
           {countries.length === 0 && !error && <LoadingSkeleton />}
-
-          {/* Infinite Scroll Loader */}
           {visibleCount < filteredCountries.length && (
             <div ref={observerRef} className="py-10 flex justify-center">
               {isFetchingMore && (
@@ -186,6 +188,12 @@ function App() {
           </button>
         )}
 
+        {selectedCountry && (
+          <CountryModal
+            country={selectedCountry}
+            onClose={() => setSelectedCountry(null)}
+          />
+        )}
 
         <Footer />
       </div>
