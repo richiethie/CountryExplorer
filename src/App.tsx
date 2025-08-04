@@ -137,8 +137,12 @@ function App() {
                 onClearRegion={() => setRegion("All")}
               />
             </div>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4 text-center sm:text-left">
+              Select a country card to view more details.
+            </p>
           </div>
         </div>
+
 
         <main className="max-w-7xl mx-auto px-6 pb-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
