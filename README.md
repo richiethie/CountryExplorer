@@ -1,6 +1,12 @@
-# 🌍 CountriesExplorer
+# 🌍 Country Explorer
 
 A responsive single-page application built with React and TypeScript that displays country data using the REST Countries API. It includes search, filtering, infinite scroll, dark mode, and accessible UI design.
+
+---
+
+## 🌐 Live Demo
+
+[Live link deployed with Vercel](https://country-explorer-liart.vercel.app/)
 
 ---
 
